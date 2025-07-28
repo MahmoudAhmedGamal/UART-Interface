@@ -58,20 +58,22 @@ module Receiver_ASH(
                             data_reg[bit_index] <= RXD;
                             parity <= parity ^ RXD;
                             sample_counter <= 0;
-                            /*if(bit_index == 7)begin
-                                parity_bit <= ^data_reg;
+                            if(bit_index == 7)begin
+                                bit_index <= bit_index;
                             end
                             else begin
                                 bit_index <= bit_index + 1;
-                            end*/
+                            end
                     end else begin
                         sample_counter <= sample_counter + 1;
                     end
             end
             PARITY: begin
+                    if (sample_counter == 7)
+                        parity_bit <= RXD;
                     if (sample_counter == 15)begin  // Sample at middle of data bit
                         sample_counter <= 0;
-                        parity_bit <= RXD;
+                        
                         /*if(parity_bit == RXD)begin
                         parity_error_reg <=0 ;
                         end
@@ -88,7 +90,7 @@ module Receiver_ASH(
                         if(RXD)begin
                             //RX_Data <= data_reg;
                             Valid_rx_reg <= 1;
-                            //parity_error_reg <= (parity == parity_bit)? 0 : 1;
+                            parity_error_reg <= (parity == parity_bit)? 0 : 1;
                             stop_error_reg <= 0;
                         end
                         else begin
@@ -157,8 +159,8 @@ module Receiver_ASH(
         endcase
     end
     
-    assign RX_Data = (state == STOP && RXD)? data_reg : RX_Data;
-    assign Parity_error = (state == STOP)? (parity != parity_bit) : 0;
+    assign RX_Data = (state == STOP)? data_reg : RX_Data;
+    assign Parity_error = parity_error_reg;
     assign Stop_error = stop_error_reg;
     assign Valid_rx = Valid_rx_reg;
 
