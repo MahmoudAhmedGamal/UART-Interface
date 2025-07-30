@@ -13,7 +13,7 @@ module Receiver_ASH(
     reg [2:0] bit_index;
     reg [3:0] state, state_next;
     reg [7:0] data_reg; 
-    reg parity_error_reg, stop_error_reg ,Valid_rx_reg; // Add registers
+    reg P_REG, S_REG ,Valid_rx_reg; // Add registers
     localparam IDLE = 3'b000,
                START = 3'b001,
                DATA = 3'b010,
@@ -26,8 +26,8 @@ module Receiver_ASH(
             bit_index <= 0;
             data_reg <= 0;
             sample_counter <= 0;
-            parity_error_reg <= 0; // Clear on reset
-            stop_error_reg <= 0;   // Clear on reset
+            P_REG <= 0; // Clear on reset
+            S_REG <= 0;   // Clear on reset
             Valid_rx_reg <= 0;
             parity <= 0;
         end
@@ -36,8 +36,8 @@ module Receiver_ASH(
         case (state)
             IDLE: begin
                 Valid_rx_reg <= 0;
-                parity_error_reg <= 0;
-                stop_error_reg <= 0;
+                P_REG <= 0;
+                S_REG <= 0;
                 if (!RXD)begin
                     sample_counter <= 0;
                     bit_index <= 0;
@@ -48,6 +48,7 @@ module Receiver_ASH(
             START: begin 
                         if (sample_counter == 7)begin  // Sample at middle of start bit
                             sample_counter <= 0;
+                            parity <= 0; // Reset parity for new frame
                         end                  
                         else begin 
                             sample_counter <= sample_counter + 1;
@@ -70,15 +71,15 @@ module Receiver_ASH(
             end
             PARITY: begin
                     if (sample_counter == 7)
-                        parity_bit <= RXD;
+                        parity_bit <= 0;
                     if (sample_counter == 15)begin  // Sample at middle of data bit
                         sample_counter <= 0;
-                        
+                        P_REG <= (parity == parity_bit)? 0 : 1;
                         /*if(parity_bit == RXD)begin
-                        parity_error_reg <=0 ;
+                        P_REG <=0 ;
                         end
                         else begin
-                        parity_error_reg <=1 ;
+                        P_REG <=1 ;
                         end*/
                     end
                     else begin
@@ -90,11 +91,10 @@ module Receiver_ASH(
                         if(RXD)begin
                             //RX_Data <= data_reg;
                             Valid_rx_reg <= 1;
-                            parity_error_reg <= (parity == parity_bit)? 0 : 1;
-                            stop_error_reg <= 0;
+                            S_REG <= 0;
                         end
                         else begin
-                            stop_error_reg <= 1;
+                            S_REG <= 1;
                         end
                     end
                     else begin
@@ -160,8 +160,8 @@ module Receiver_ASH(
     end
     
     assign RX_Data = (state == STOP)? data_reg : RX_Data;
-    assign Parity_error = parity_error_reg;
-    assign Stop_error = stop_error_reg;
+    assign Parity_error = (state == STOP)? P_REG : 0;
+    assign Stop_error = S_REG;
     assign Valid_rx = Valid_rx_reg;
 
 endmodule
