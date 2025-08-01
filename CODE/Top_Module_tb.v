@@ -11,7 +11,7 @@ module Top_Module_tb();
     //reg RXD;
     wire [7:0] RX_Data;
     reg transmit;
-    wire TXD;
+    //wire TXD;
     wire busy;
     reg [7:0] TX_Data;
     wire Valid_rx;
@@ -26,7 +26,7 @@ module Top_Module_tb();
         .clk(clk),
         .reset(reset),
         //.RXD(RXD),
-        .TXD(TXD),
+        //.TXD(TXD),
         .RX_Data(RX_Data),
         .transmit(transmit),
         .busy(busy),
@@ -85,6 +85,6 @@ module Top_Module_tb();
         $stop;
     end
     initial begin
-        $monitor("TX_Data=%b, RX_Data=%b, TXD=%b, busy=%b", TX_Data, RX_Data, TXD, busy);
+        $monitor("TX_Data=%b, RX_Data=%b, busy=%b", TX_Data, RX_Data, busy);
     end
 endmodule
