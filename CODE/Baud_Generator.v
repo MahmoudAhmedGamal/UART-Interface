@@ -28,19 +28,19 @@ always @(posedge clk or posedge reset) begin
         // Main baud rate counter (9600 baud)
         if (TX_COUNTER == TX_DIVISOR - 1) begin
             TX_COUNTER <= 0;
-            TX_TICK_reg <=  ~TX_TICK_reg ;
+            TX_TICK_reg <=  1 ;
         end else begin
             TX_COUNTER <= TX_COUNTER + 1;
-            //TX_TICK_reg <= 0;
+            TX_TICK_reg <= 0;
         end
 
         // 16x oversampling counter (153600 Hz for 9600 baud)
         if (RX_COUNTER == RX_DIVISOR - 1) begin
             RX_COUNTER <= 0;
-            RX_TICK_reg <= ~RX_TICK_reg;
+            RX_TICK_reg <= 1;
         end else begin
             RX_COUNTER <= RX_COUNTER + 1;
-            //RX_TICK_reg <= 0;
+            RX_TICK_reg <= 0;
         end
     end
 end

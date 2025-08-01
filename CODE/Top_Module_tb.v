@@ -26,7 +26,7 @@ module Top_Module_tb();
         .clk(clk),
         .reset(reset),
         //.RXD(RXD),
-        //.TXD(TXD),
+    //    .TXD(TXD),
         .RX_Data(RX_Data),
         .transmit(transmit),
         .busy(busy),
@@ -39,7 +39,7 @@ module Top_Module_tb();
     // Clock generation
     initial begin
         clk = 0;
-        forever #10 clk = ~clk; // Clock generation
+        forever #50 clk = ~clk; // Clock generation
     end
     
     task reset_sequence;
@@ -55,11 +55,11 @@ module Top_Module_tb();
         input [7:0] DATA_SEND;
         begin
             if (RX_Data !== DATA_SEND)
-                $display("TEST FAILED: DATA_SEND = %b, DATA_RECEIVED = %b, busy = %b, Stop_error = %b, Parity_error = %b", DATA_SEND, RX_Data, busy, Stop_error, Parity_error);
+                $display("TEST FAILED: DATA_SEND = %b, DATA_RECEIVED = %b", DATA_SEND, RX_Data);
             else if (Parity_error)
-                $display("TEST FAILED: DATA_SEND = %b, DATA_RECEIVED = %b, busy = %b, Stop_error = %b, Parity_error = %b", DATA_SEND, RX_Data, busy, Stop_error, Parity_error);
+                $display("TEST FAILED: DATA_SEND = %b, DATA_RECEIVED = %b, Parity_error = %b", DATA_SEND, RX_Data, Parity_error);
             else if (Stop_error)
-                $display("TEST FAILED: DATA_SEND = %b, DATA_RECEIVED = %b, busy = %b Stop_error = %b, Parity_error = %b", DATA_SEND, RX_Data, busy, Stop_error, Parity_error);
+                $display("TEST FAILED: DATA_SEND = %b, DATA_RECEIVED = %b, Stop_error = %b", DATA_SEND, RX_Data, Stop_error);
             else
                 $display("TEST COMPLETED: DATA_SEND = %b, DATA_RECEIVED = %b, busy = %b, Stop_error = %b, Parity_error = %b", DATA_SEND, RX_Data, busy, Stop_error, Parity_error);
         end
@@ -74,7 +74,6 @@ module Top_Module_tb();
             transmit = 1;
             wait (busy == 1);
             transmit = 0;
-            @(negedge clk);
             wait (busy == 0);
             @(negedge clk);
             @(negedge clk);
