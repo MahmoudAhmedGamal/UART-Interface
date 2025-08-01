@@ -8,10 +8,8 @@ module Top_Module_tb();
     // Testbench signals
     reg clk;
     reg reset;
-    //reg RXD;
     wire [7:0] RX_Data;
     reg transmit;
-    //wire TXD;
     wire busy;
     reg [7:0] TX_Data;
     wire Valid_rx;
@@ -25,8 +23,6 @@ module Top_Module_tb();
     ) dut (
         .clk(clk),
         .reset(reset),
-        //.RXD(RXD),
-    //    .TXD(TXD),
         .RX_Data(RX_Data),
         .transmit(transmit),
         .busy(busy),
@@ -86,4 +82,5 @@ module Top_Module_tb();
     initial begin
         $monitor("TX_Data=%b, RX_Data=%b, busy=%b", TX_Data, RX_Data, busy);
     end
+
 endmodule
