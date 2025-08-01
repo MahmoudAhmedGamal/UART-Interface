@@ -6,9 +6,9 @@ module Top_Module #(
     input reset,
     // UART interface signals
     //input wire RXD,
-    output wire TXD,
+    //output wire TXD,
     // User interface
-    input wire [7:0] RX_Data,
+    output wire [7:0] RX_Data,
     input wire transmit,
     output wire busy,
     input wire [7:0] TX_Data,
@@ -18,6 +18,7 @@ module Top_Module #(
 );
     wire TX_TICK ;
     wire RX_TICK ;
+    wire TXD;
     Baud_Generator #(.CLK_FREQ(CLK_FREQ),.BAUD_RATE(BAUD_RATE)) bd (
         .clk(clk),
         .reset(reset),
