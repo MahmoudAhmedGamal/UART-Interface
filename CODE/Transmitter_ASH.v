@@ -68,9 +68,10 @@ module Transmitter_ASH(
             endcase
     end
     assign TXD = (state == IDLE )? 1: (state == START)? 0: (state == DATA)? data_reg[bit_index] : (state == PARITY) ? parity_bit : 1;
-    assign busy = (state != IDLE);
+    assign busy = (state == IDLE)? 0 : 1;
 
 endmodule
+
 
 
     
