@@ -71,8 +71,8 @@ module Top_Module_tb();
             wait (busy == 1);
             transmit = 0;
             wait (busy == 0);
-            @(negedge clk);
-            @(negedge clk);
+
+            wait (Valid_rx == 1);
 
             Validate_Outputs(TX_Data);
             @(negedge clk);
@@ -84,3 +84,4 @@ module Top_Module_tb();
     end
 
 endmodule
+
