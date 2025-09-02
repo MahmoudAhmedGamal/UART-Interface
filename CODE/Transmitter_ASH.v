@@ -6,11 +6,10 @@ module Transmitter_ASH(
     output wire  busy,
     output wire  TXD
 );
-    reg [2:0] bit_index;
-    reg parity_bit;
-    reg [3:0] state,next_state;
-    reg [7:0] data_reg; 
-
+    reg [2:0] bit_index  ,bit_index_next;
+    reg [2:0] state      ,next_state;
+    reg [7:0] data_reg   ,data_reg_next; 
+    reg       parity_bit ,parity_bit_next;
     localparam IDLE = 3'b000,
                START = 3'b001,
                DATA = 3'b010,
@@ -25,23 +24,24 @@ module Transmitter_ASH(
         end
         else begin
             state <= next_state;
-            if (state == IDLE && transmit) begin
-                data_reg  <= TX_Data;
-                parity_bit <= ^TX_Data; // Even parity
-                bit_index <= 0;
-            end
-
-            if (state == DATA && bit_index < 7) begin
-                bit_index <= bit_index + 1;
-            end
+            data_reg <= data_reg_next;
+            bit_index <= bit_index_next;
+            parity_bit <= parity_bit_next;
         end
     end
     always @(*) begin 
             next_state = state;
+            data_reg_next = data_reg;
+            bit_index_next = bit_index;
+            parity_bit_next = parity_bit;
+
             case (state)
                 IDLE: begin
                     if (transmit) begin
-                        next_state = START;            
+                        next_state = START; 
+                        data_reg_next = TX_Data;
+                        parity_bit_next = ^TX_Data; // Calculate even parity
+                        bit_index_next = 0;          
                     end  
                 end
                 START: begin
@@ -52,7 +52,7 @@ module Transmitter_ASH(
                     if (bit_index == 7) begin
                         next_state = PARITY;
                     end else begin
-                        next_state = DATA;
+                        bit_index_next = bit_index + 1;
                     end
                 end
                 
@@ -71,7 +71,3 @@ module Transmitter_ASH(
     assign busy = (state == IDLE)? 0 : 1;
 
 endmodule
-
-
-
-    
